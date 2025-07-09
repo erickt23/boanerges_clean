@@ -1,0 +1,53 @@
+Prompt 4: Spécifications techniques détaillées par fonctionnalité**
+
+```
+
+En tant que développeur full-stack senior, écris les spécifications techniques pour implémenter les fonctionnalités suivantes de l'application web de gestion d'église.
+
+L'application est structurée en :
+
+- Backend : [choix technologique du prompt 1, ex: Node.js/Express]
+
+- Frontend : [choix technologique du prompt 1, ex: React]
+
+Fonctionnalités à détailler (chaque fonctionnalité doit inclure) :
+
+- Endpoints API (URL, méthode, paramètres, corps de requête, réponse, codes d'erreur)
+
+- Schéma de validation des données (si nécessaire)
+
+- Composants frontend (avec structure et props si React)
+
+- Logique métier (pseudo-code ou description détaillée)
+
+Liste des fonctionnalités :
+
+1. Authentification (login, changement de mot de passe)
+
+2. Gestion des membres (ajout, édition, consultation, liste, génération du code membre)
+
+* Lors de l'ajout, générer le code membre selon la règle : MEB + jour et mois (format DDMM) + le prochain numéro d'ordre pour cette date. Ex: si deux membres existent déjà pour le 13 août, le nouveau sera 03 (donc MEB130803).
+
+3. Prise de présence (trois méthodes : manuelle par numéro de membre, scan QR code, et saisie manuelle pour les visiteurs). L'interface doit permettre de sélectionner un événement (service) et d'ajouter les présences.
+
+4. Gestion des dons : formulaire pour enregistrer un don (type, montant, date, membre associé optionnel). Si un membre est associé, le don est enregistré pour le reçu fiscal.
+
+5. Génération de reçu fiscal : pour un membre, générer un PDF avec tous ses dons éligibles pour l'année.
+
+6. Calendrier : CRUD pour les événements, affichage (mois, semaine, jour), export (format iCal).
+
+7. Tableau de bord : endpoints pour les données statistiques (recettes par période, fréquentation par sexe et total). Frontend : graphiques (utiliser une librairie comme Chart.js).
+
+8. Espace membre : page où le membre peut voir ses informations, l'historique de ses dons et de ses présences.
+
+9. Autres :
+
+* Gestion des groupes (CRUD, ajout/suppression de membres, désignation responsable)
+
+* Galerie (téléchargement de photos, création d'albums, association à un événement)
+
+Pour chaque fonctionnalité, fournir une spécification claire et prête à être codée.
+
+Livrable attendu :
+
+Un document structuré par fonctionnalité, avec les détails backend et frontend.

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test File Upload</title>
+</head>
+<body>
+    <h1>Test Gallery Upload</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" accept="image/*,video/*" required>
+        <input type="number" id="albumId" placeholder="Album ID" value="4" required>
+        <input type="text" id="caption" placeholder="Caption">
+        <input type="text" id="tags" placeholder="Tags (comma separated)">
+        <button type="submit">Upload</button>
+    </form>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            const file = document.getElementById('fileInput').files[0];
+            const albumId = document.getElementById('albumId').value;
+            const caption = document.getElementById('caption').value;
+            const tags = document.getElementById('tags').value;
+            
+            formData.append('file', file);
+            formData.append('albumId', albumId);
+            formData.append('caption', caption);
+            formData.append('tags', JSON.stringify(tags.split(',').map(t => t.trim()).filter(t => t)));
+            
+            try {
+                const response = await fetch('/api/gallery/photos', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                console.log('Upload result:', result);
+                alert('Upload ' + (response.ok ? 'successful' : 'failed'));
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Upload error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>. Error Component Stack
+    at a (<anonymous>)
+    at a (<anonymous>)
+    at index.js:251:18
+    at nav (<anonymous>)
+    at SidebarContent (<anonymous>)
+    at div (<anonymous>)
+    at aside (<anonymous>)
+    at Sidebar (sidebar.tsx:22:22)
+    at div (<anonymous>)
+    at Members (members.tsx:16:43)
+    at ProtectedRoute (protected-route.tsx:6:3)
+    at Switch (index.js:314:19)
+    at Router (<anonymous>)
+    at Provider (create-context.tsx:59:15)
+    at TooltipProvider (tooltip.tsx:68:5)
+    at AuthProvider (use-auth.tsx:23:32)
+    at QueryClientProvider (QueryClientProvider.tsx:30:3)
+    at App (<anonymous>)
+overrideMethod @ hook.js:608
+alphabetical-member-list.tsx:60 Total members: 0
+alphabetical-member-list.tsx:61 Active members: 0
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: Array(0)
+alphabetical-member-list.tsx:60 Total members: 11
+alphabetical-member-list.tsx:61 Active members: 11
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: Array(11)
+[NEW] Explain Console errors by using Copilot in Edge: click
+         
+         to explain an error. 
+        Learn more
+        Don't show again
+alphabetical-member-list.tsx:60 Total members: 11
+alphabetical-member-list.tsx:61 Active members: 11
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: (11) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+alphabetical-member-list.tsx:60 Total members: 11
+alphabetical-member-list.tsx:61 Active members: 11
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: (11) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+alphabetical-member-list.tsx:60 Total members: 11
+alphabetical-member-list.tsx:61 Active members: 11
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: (11) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+alphabetical-member-list.tsx:60 Total members: 10
+alphabetical-member-list.tsx:61 Active members: 10
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]
+alphabetical-member-list.tsx:60 Total members: 10
+alphabetical-member-list.tsx:61 Active members: 10
+alphabetical-member-list.tsx:62 Inactive members: 0
+alphabetical-member-list.tsx:63 Members data: (10) [{…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}]

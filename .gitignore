@@ -1,0 +1,11 @@
+
+# dependencies
+/node_modules
+.config/
+/.config/.vscode-server/
+
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz

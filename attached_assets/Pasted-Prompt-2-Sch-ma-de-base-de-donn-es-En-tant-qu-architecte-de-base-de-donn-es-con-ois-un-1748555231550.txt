@@ -1,0 +1,54 @@
+Prompt 2: Schéma de base de données**
+
+```
+
+En tant qu'architecte de base de données, conçois un schéma relationnel pour une application de gestion d'église.
+
+Fonctionnalités à modéliser :
+
+- Utilisateurs (super admin, admin, utilisateur simple, membre) : stocker les informations de connexion et les rôles. Pour les membres, le login par défaut est leur code membre et année de naissance. Ils peuvent changer leur mot de passe.
+
+- Membre : nom, prénom, date de naissance, sexe, téléphone, email, adresse (appartement, numéro de bâtiment, rue, ville, code postal, pays). Le code membre est généré selon la règle : MEB + jour et mois de naissance (format DDMM) + un numéro d'ordre sur deux chiffres (ex: 01, 02).
+
+- Présence : enregistrement des présences aux services/activités. Chaque enregistrement lie un membre (ou visiteur) à un événement du calendrier. Pour les visiteurs, on enregistre un nom et prénom (pas de lien avec un membre).
+
+- Dons : enregistrement des dons (génériques, offrandes, dîmes). Chaque don peut être associé à un membre (optionnel) et a un type, un montant, une date. Les dons associés à un membre permettent de générer un reçu fiscal.
+
+- Calendrier d'activités : événements (services, réunions, etc.) avec date, heure, lieu, description, type.
+
+- Tableau de bord : pas de table spécifique, mais des vues ou fonctions pour les statistiques.
+
+- Autres entités :
+
+* Groupes : groupes de membres (avec responsable, description)
+
+* Ressources : salles, matériel (avec réservation liée au calendrier)
+
+* Galerie : albums photo, photos (liées à un événement)
+
+* Journal d'audit : pour suivre les modifications critiques (qui, quand, quoi)
+
+Contraintes :
+
+- Adresse : validation (pays par défaut Canada). Stocker les composantes séparément.
+
+- Email : validation
+
+- Le code membre doit être unique et généré automatiquement à la création.
+
+Livrable attendu :
+
+Un script SQL de création des tables, avec les contraintes (PK, FK, unique, check). Inclure les index nécessaires. Ajouter des commentaires pour expliquer chaque table et colonne. Utiliser le format suivant pour le code :
+
+-- Table: nom_table
+
+-- Description: ...
+
+CREATE TABLE nom_table (
+
+colonne1 type contraintes,
+
+...
+
+);
+

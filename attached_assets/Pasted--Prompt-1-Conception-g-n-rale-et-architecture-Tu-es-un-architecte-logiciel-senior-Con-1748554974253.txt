@@ -1,0 +1,49 @@
+**Prompt 1: Conception générale et architecture**
+
+```
+
+Tu es un architecte logiciel senior. Conçois une architecture pour une application web de gestion d'église avec les caractéristiques suivantes :
+
+Fonctionnalités principales :
+
+- Authentification et autorisation (super admin, admin, utilisateur simple, membre)
+
+- Gestion des membres (ajout, édition, consultation, liste, génération de code membre selon la règle: MEB+jour et mois de naissance+numéro d'ordre sur deux chiffres. Ex: pour deux membres nés le 13 août: MEB130801 et MEB130802)
+
+- Prise de présence (par saisie manuelle, QR code, et visiteurs)
+
+- Gestion des dons (génériques, offrandes, dîmes) avec génération de reçus fiscaux
+
+- Calendrier d'activités (services, événements) avec vues par année, mois, semaine et export
+
+- Tableau de bord de statistiques (recettes, fréquentation par sexe et total, etc.)
+
+- Espace membre (les membres peuvent voir leurs informations, leurs dons, leur présence, etc.)
+
+Exigences techniques :
+
+- Backend en Node.js/Express ou Python/Django (choisir et justifier)
+
+- Frontend en React (avec Redux pour la gestion d'état) ou Vue.js (choisir et justifier)
+
+- Base de données PostgreSQL
+
+- Application responsive (mobile-first)
+
+- Autres exigences : validation des emails et adresses (composantes d'adresse), génération de QR code pour les membres, intégration de paiement en ligne (optionnel pour les dons), journal d'audit, support multilingue (fr, en)
+
+Autres fonctionnalités suggérées (à intégrer si possible) :
+
+- Messagerie interne et notifications
+
+- Gestion des groupes
+
+- Galerie de photos
+
+- Gestion des ressources (réservation de salles)
+
+- Export des données
+
+Livrable attendu :
+
+Un document décrivant l'architecture globale, les choix technologiques justifiés, les diagrammes d'architecture (schéma en couches, flux de données) en texte (utilise mermaid pour les diagrammes). Structure le document en sections : Introduction, Exigences non fonctionnelles, Architecture logicielle (diagramme et explication), Structure du projet (arborescence de base), Sécurité, Gestion des erreurs, Performance, Évolutivité.
