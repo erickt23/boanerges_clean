@@ -1,0 +1,9 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f59e0b"/>
+  <rect x="50" y="50" width="300" height="200" fill="white" rx="10"/>
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="20" fill="#1f2937" text-anchor="middle">Youth Activity</text>
+  <text x="200" y="150" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">Games & Activities</text>
+  <circle cx="150" cy="190" r="12" fill="#f59e0b"/>
+  <circle cx="200" cy="190" r="12" fill="#f59e0b"/>
+  <circle cx="250" cy="190" r="12" fill="#f59e0b"/>
+</svg>
