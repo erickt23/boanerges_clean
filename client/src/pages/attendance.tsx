@@ -66,40 +66,40 @@ export default function Attendance() {
 
             <TabsContent value="stats" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-            <Card className="bg-green-50 dark:bg-card">
+            <Card className="bg-green-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{t('totalAttendance')}</CardTitle>
                 <UserCheck className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
+              <CardContent className="pt-6 h-[120px] lg:h-[120px]">
+                <div className="text-2xl sm:text-3xl font-bold">
                   {attendanceStats && typeof attendanceStats === 'object' && 'total' in attendanceStats ? (attendanceStats as any).total : 0}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground truncate">
                   {t('recentPeriod')}
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-blue-50 dark:bg-card">
+            <Card className="bg-blue-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{t('men')}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
+              <CardContent className="pt-6 h-[120px] lg:h-[120px]">
+                <div className="text-2xl sm:text-3xl font-bold">
                   {(attendanceStats as any)?.byGender?.find((g: any) => g.gender === 'M')?.count || 0}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-pink-50 dark:bg-card">
+            <Card className="bg-pink-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">{t('women')}</CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
+              <CardContent className="pt-6 h-[120px] lg:h-[120px]">
+                <div className="text-2xl sm:text-3xl font-bold">
                   {(attendanceStats as any)?.byGender?.find((g: any) => g.gender === 'F')?.count || 0}
                 </div>
               </CardContent>

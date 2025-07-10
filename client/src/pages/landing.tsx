@@ -37,11 +37,15 @@ import {
   GraduationCap,
   Shield,
   Baby,
+  Moon,
+  Sun,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 export default function Landing() {
   const { user, isLoading } = useAuth();
   const { t, language, changeLanguage } = useTranslation();
+  const { theme, setTheme } = useTheme();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Check if this is a public view request
@@ -307,9 +311,9 @@ END:VCALENDAR\r`;
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       {/* Header/Navigation */}
-      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-white/80 backdrop-blur-sm border-b border-gray-200 dark:bg-gray-900/80 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -317,10 +321,10 @@ END:VCALENDAR\r`;
                 <Church className="h-8 w-8 text-white" />
               </div>
               <div className="ml-3">
-                <h1 className="text-lg font-bold text-gray-800">
+                <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
                   {t("missionEvangelique")}
                 </h1>
-                <p className="text-sm text-gray-600">{t("boanerges")}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{t("boanerges")}</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -333,6 +337,15 @@ END:VCALENDAR\r`;
                   <SelectItem value="en">🇺🇸 EN</SelectItem>
                 </SelectContent>
               </Select>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
               <Link href="/auth">
                 <Button className="bg-blue-600 hover:bg-blue-700">
                   <Users className="h-4 w-4 mr-2" />
@@ -367,6 +380,7 @@ END:VCALENDAR\r`;
                   <p className="text-xl lg:text-2xl mb-8">
                     {churchPhotos[currentImageIndex].subtitle}
                   </p>
+                  {/*}
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
                       <MapPin className="h-5 w-5 mr-2" />
@@ -381,6 +395,7 @@ END:VCALENDAR\r`;
                       {t("contactUs")}
                     </Button>
                   </div>
+                  */}
                 </>
               ) : (
                 <>
@@ -426,20 +441,20 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Public Events Calendar */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {t("upcomingEvents")}
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Rejoignez-nous pour nos prochains événements
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {events.slice(0, 6).map((event: any) => (
-              <Card key={event.id} className="border-none shadow-lg">
+              <Card key={event.id} className="border-none shadow-lg flex flex-col min-h-[250px]">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="mb-2">
@@ -469,8 +484,8 @@ END:VCALENDAR\r`;
                   </div>
                   <CardTitle className="text-lg">{event.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4 text-sm">
+                <CardContent className="flex flex-col flex-grow justify-between">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm">
                     {event.description}
                   </p>
                   <div className="flex flex-col space-y-2">
@@ -481,8 +496,9 @@ END:VCALENDAR\r`;
                       className="w-full"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      {t("downloadICS")}
+                      {t("addToCalendar")}
                     </Button>
+                    {/*}
                     <div className="flex space-x-2">
                       <Button
                         variant="outline"
@@ -503,6 +519,7 @@ END:VCALENDAR\r`;
                         {t("attending")}
                       </Button>
                     </div>
+                    */}
                   </div>
                 </CardContent>
               </Card>
@@ -512,7 +529,7 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Mission & Vision */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             <Card className="border-none shadow-lg">
@@ -523,7 +540,7 @@ END:VCALENDAR\r`;
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
                   {t("missionDescription")}
                 </p>
               </CardContent>
@@ -537,7 +554,7 @@ END:VCALENDAR\r`;
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600 text-lg leading-relaxed">
+                <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
                   {t("visionDescription")}
                 </p>
               </CardContent>
@@ -547,13 +564,13 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Services & Horaires */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {t("ourServices")}
             </h2>
-            <p className="text-xl text-gray-600">{t("welcomeSubtitle")}</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">{t("welcomeSubtitle")}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -568,13 +585,13 @@ END:VCALENDAR\r`;
                     <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Icon className="h-8 w-8 text-blue-600" />
                     </div>
-                    <CardTitle className="text-xl">{service.title}</CardTitle>
-                    <Badge variant="outline" className="text-blue-600">
+                    <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{service.title}</CardTitle>
+                    <Badge variant="outline" className="text-blue-600 dark:text-blue-400">
                       {service.time}
                     </Badge>
                   </CardHeader>
                   <CardContent className="text-center">
-                    <p className="text-gray-600">{service.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300">{service.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -584,13 +601,13 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Corps Pastoral */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {t("ourPastors")}
             </h2>
-            <p className="text-xl text-gray-600">{t("meetOurTeam")}</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">{t("meetOurTeam")}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -605,13 +622,13 @@ END:VCALENDAR\r`;
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <CardTitle className="text-xl">{pastor.name}</CardTitle>
+                    <CardTitle className="text-xl text-gray-900 dark:text-gray-100">{pastor.name}</CardTitle>
                     <Badge variant="secondary" className="mx-auto">
                       {pastor.role}
                     </Badge>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600">{pastor.description}</p>
+                    <p className="text-gray-600 dark:text-gray-300">{pastor.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -621,13 +638,13 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Ministry Departments */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {t("ourDepartments")}
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Découvrez nos différents départements et leurs responsables
             </p>
           </div>
@@ -652,12 +669,12 @@ END:VCALENDAR\r`;
                     >
                       <Icon className="h-8 w-8" />
                     </div>
-                    <CardTitle className="text-lg text-center">
+                    <CardTitle className="text-lg text-center text-gray-900 dark:text-gray-100">
                       {dept.name}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 text-sm mb-3">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
                       {dept.description}
                     </p>
                     <div className="text-center">
@@ -674,13 +691,13 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Confession de Foi */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-4">
               {t("confessionOfFaith")}
             </h2>
-            <p className="text-xl text-gray-600">{t("confessionDesc")}</p>
+            <p className="text-xl text-gray-600 dark:text-gray-300">{t("confessionDesc")}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
@@ -694,43 +711,38 @@ END:VCALENDAR\r`;
               <CardContent className="space-y-3">
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    L'autorité souveraine et l'inspiration plénière des Saintes
-                    Écritures
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement1")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La Trinité : Père, Fils et Saint-Esprit, un seul Dieu en
-                    trois personnes
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement2")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La divinité absolue de Jésus-Christ, vrai Dieu et vrai homme
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement3")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La chute de l'homme et la nécessité absolue de la nouvelle
-                    naissance
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement4")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La rédemption par le sang de Jésus-Christ et la
-                    justification par la foi
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement5")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    Le baptême par immersion au nom du Père, du Fils et du
-                    Saint-Esprit
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement6")}
                   </span>
                 </div>
               </CardContent>
@@ -740,45 +752,44 @@ END:VCALENDAR\r`;
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Heart className="h-5 w-5 text-red-600" />
-                  <span>Vie Spirituelle</span>
+                  <span>{t("spiritualLife")}</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La sanctification par le Saint-Esprit et la vie de sainteté
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement7")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La guérison divine par la foi au nom de Jésus-Christ
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement8")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    Les dons spirituels et leur manifestation dans l'Église
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement9")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    Le retour personnel et imminent de Jésus-Christ
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement10")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    La résurrection des morts et la vie éternelle
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement11")}
                   </span>
                 </div>
                 <div className="flex items-start space-x-2">
                   <div className="w-2 h-2 bg-red-600 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-700">
-                    Le jugement éternel et la séparation finale entre justes et
-                    injustes
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {t("faithStatement12")}
                   </span>
                 </div>
               </CardContent>
@@ -786,11 +797,9 @@ END:VCALENDAR\r`;
           </div>
 
           <div className="mt-8 text-center">
-            <div className="bg-blue-50 p-6 rounded-lg max-w-4xl mx-auto">
-              <p className="text-blue-800 font-medium text-lg italic">
-                "Ces points de foi guident notre enseignement, notre culte et
-                notre vie communautaire, nous ancrant solidement dans la Parole
-                de Dieu."
+            <div className="bg-blue-50 dark:bg-blue-950 p-6 rounded-lg max-w-4xl mx-auto">
+              <p className="text-blue-800 dark:text-blue-200 font-medium text-lg italic">
+                {t("faithQuote")}
               </p>
             </div>
           </div>
@@ -798,7 +807,7 @@ END:VCALENDAR\r`;
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
+      <footer className="bg-gray-900 dark:bg-gray-800 text-gray-300 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
             <div>

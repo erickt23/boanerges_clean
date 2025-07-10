@@ -102,14 +102,14 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
         return (
           <Link key={index} href={card.link}>
             <Card className={`${index === 0 ? 'bg-blue-50 dark:bg-card' : index === 1 ? 'bg-green-50 dark:bg-card' : index === 2 ? 'bg-yellow-50 dark:bg-card' : 'bg-purple-50 dark:bg-card'} shadow-material hover:shadow-lg transition-shadow cursor-pointer`}>
-              <CardContent className="pt-6">
+              <CardContent className="pt-6 h-[120px] lg:h-[120px]">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">{card.title}</p>
-                    <p className="text-3xl font-bold text-foreground">{card.value}</p>
+                    <p className="text-2xl sm:text-3xl font-bold text-foreground">{card.value}</p>
                     <p className="text-sm text-muted-foreground flex items-center mt-1">
                       <TrendingUp className="h-3 w-3 mr-1" />
-                      <span>{card.change}</span>
+                      <span className="truncate">{card.change}</span>
                     </p>
                   </div>
                   <div className={`w-12 h-12 ${card.bgColor} rounded-full flex items-center justify-center`}>
