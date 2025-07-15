@@ -1,0 +1,7 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#0ea5e9"/>
+  <rect x="50" y="50" width="300" height="200" fill="white" rx="10"/>
+  <text x="200" y="120" font-family="Arial, sans-serif" font-size="20" fill="#1f2937" text-anchor="middle">Baptism</text>
+  <text x="200" y="150" font-family="Arial, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">March Ceremony</text>
+  <ellipse cx="200" cy="200" rx="50" ry="20" fill="#0ea5e9" opacity="0.3"/>
+</svg>
