@@ -201,7 +201,7 @@ export default function AlphabeticalMemberList({
                 <div
                   key={member.id}
                   onClick={() => openMemberDetails(member)}
-                  className={`flex items-center space-x-4 p-4 border rounded-lg cursor-pointer transition-colors ${member.gender === 'M' ? 'bg-blue-50 dark:bg-muted/50' : member.gender === 'F' ? 'bg-pink-50 dark:bg-muted/50' : 'bg-gray-50 dark:bg-muted/50'}`}
+                  className={`flex items-center space-x-4 p-4 border rounded-lg cursor-pointer transition-colors hover:shadow-md hover:scale-[1.01] ${member.gender === 'M' ? 'bg-blue-50 dark:bg-muted/50' : member.gender === 'F' ? 'bg-pink-50 dark:bg-muted/50' : 'bg-gray-50 dark:bg-muted/50'}`}
                 >
                   <Avatar className={`h-12 w-12 ${getAvatarColor(member.gender)}`}>
                     <AvatarFallback>

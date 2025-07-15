@@ -550,22 +550,27 @@ END:VCALENDAR`;
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
     try {
-      const attendanceData = insertAttendanceSchema.parse({
-        ...req.body,
-        recordedBy: req.user!.id
-      });
-      const attendance = await storage.createAttendance(attendanceData);
-      
-      // Log the action
-      await storage.logAction({
-        userId: req.user!.id,
-        action: "CREATE",
-        tableName: "attendance",
-        recordId: attendance.id,
-        newValues: JSON.stringify(attendance)
-      });
-      
-      res.status(201).json(attendance);
+      const { memberIds, ...rest } = req.body;
+
+      if (Array.isArray(memberIds) && memberIds.length > 0) {
+        // Handle multiple members
+        const attendanceRecords = memberIds.map(memberId => ({
+          ...rest,
+          memberId,
+          recordedBy: req.user!.id
+        }));
+        const validatedRecords = z.array(insertAttendanceSchema).parse(attendanceRecords);
+        const created = await storage.createManyAttendances(validatedRecords);
+        res.status(201).json({ count: created.length });
+      } else {
+        // Handle single member or visitor
+        const attendanceData = insertAttendanceSchema.parse({
+          ...req.body,
+          recordedBy: req.user!.id
+        });
+        const attendance = await storage.createAttendance(attendanceData);
+        res.status(201).json(attendance);
+      }
     } catch (error) {
       console.error("Attendance error:", error);
       if (error instanceof z.ZodError) {

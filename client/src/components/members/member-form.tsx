@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { insertMemberSchema, type InsertMember } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,14 +14,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { z } from "zod";
 import ProvinceSelect from "./province-select";
 
-const memberFormSchema = insertMemberSchema.extend({
-  email: z.string().email("Email invalide").optional().or(z.literal("")),
-  phone: z.string().optional(),
-  postalCode: z.string().optional(),
-  province: z.string().optional(),
-});
-
-type MemberFormData = z.infer<typeof memberFormSchema>;
 
 interface MemberFormProps {
   onSuccess?: () => void;
@@ -31,6 +24,18 @@ interface MemberFormProps {
 export default function MemberForm({ onSuccess, member, isEditing = false }: MemberFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  const invalidEmailMessage = t('invalidEmail');
+
+  const memberFormSchema = insertMemberSchema.extend({
+    email: z.string().email(t('invalidEmail')).optional().or(z.literal("")),
+    phone: z.string().optional(),
+    postalCode: z.string().optional(),
+    province: z.string().optional(),
+  });
+
+  type MemberFormData = z.infer<typeof memberFormSchema>;
 
   const form = useForm<MemberFormData>({
     resolver: zodResolver(memberFormSchema),
@@ -60,14 +65,14 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });
       toast({
-        title: "Succès",
-        description: "Membre créé avec succès",
+        title: t('success'),
+        description: t('memberCreatedSuccessfully'),
       });
       onSuccess?.();
     },
     onError: (error: Error) => {
       toast({
-        title: "Erreur",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -82,14 +87,14 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/members"] });
       toast({
-        title: "Succès",
-        description: "Membre mis à jour avec succès",
+        title: t('success'),
+        description: t('memberUpdatedSuccessfully'),
       });
       onSuccess?.();
     },
     onError: (error: Error) => {
       toast({
-        title: "Erreur",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -111,7 +116,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-h-[70vh] overflow-y-auto">
         {/* Personal Information */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Informations Personnelles</h3>
+          <h3 className="text-lg font-medium text-gray-900">{t('personalInformation')}</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -119,7 +124,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Prénom *</FormLabel>
+                  <FormLabel>{t('firstName')} *</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isLoading} />
                   </FormControl>
@@ -133,7 +138,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nom *</FormLabel>
+                  <FormLabel>{t('lastName')} *</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isLoading} />
                   </FormControl>
@@ -149,7 +154,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="dateOfBirth"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date de Naissance *</FormLabel>
+                  <FormLabel>{t('dateOfBirth')} *</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} disabled={isLoading} />
                   </FormControl>
@@ -163,16 +168,16 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="gender"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sexe *</FormLabel>
+                  <FormLabel>{t('gender')} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner" />
+                        <SelectValue placeholder={t('select')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="M">Masculin</SelectItem>
-                      <SelectItem value="F">Féminin</SelectItem>
+                      <SelectItem value="M">{t('male')}</SelectItem>
+                      <SelectItem value="F">{t('female')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -187,7 +192,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Téléphone</FormLabel>
+                  <FormLabel>{t('phone')}</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isLoading} />
                   </FormControl>
@@ -201,7 +206,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('email')}</FormLabel>
                   <FormControl>
                     <Input type="email" {...field} disabled={isLoading} />
                   </FormControl>
@@ -214,7 +219,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
 
         {/* Address Information */}
         <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Adresse</h3>
+          <h3 className="text-lg font-medium text-gray-900">{t('address')}</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <FormField
@@ -222,7 +227,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="apartment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Appartement</FormLabel>
+                  <FormLabel>{t('apartment')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ""} disabled={isLoading} />
                   </FormControl>
@@ -236,7 +241,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="buildingNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Numéro de Bâtiment</FormLabel>
+                  <FormLabel>{t('buildingNumber')}</FormLabel>
                   <FormControl>
                     <Input {...field} value={field.value || ""} disabled={isLoading} />
                   </FormControl>
@@ -251,7 +256,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
             name="street"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Rue *</FormLabel>
+                <FormLabel>{t('street')} *</FormLabel>
                 <FormControl>
                   <Input {...field} disabled={isLoading} />
                 </FormControl>
@@ -266,7 +271,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ville *</FormLabel>
+                  <FormLabel>{t('city')} *</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isLoading} />
                   </FormControl>
@@ -293,7 +298,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="postalCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Code Postal</FormLabel>
+                  <FormLabel>{t('postalCode')}</FormLabel>
                   <FormControl>
                     <Input {...field} disabled={isLoading} />
                   </FormControl>
@@ -307,7 +312,7 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Pays *</FormLabel>
+                  <FormLabel>{t('country')} *</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
                     <FormControl>
                       <SelectTrigger>
@@ -315,11 +320,11 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Canada">Canada</SelectItem>
-                      <SelectItem value="France">France</SelectItem>
-                      <SelectItem value="Belgique">Belgique</SelectItem>
-                      <SelectItem value="Suisse">Suisse</SelectItem>
-                      <SelectItem value="Autre">Autre</SelectItem>
+                      <SelectItem value="Canada">{t('canada')}</SelectItem>
+                      <SelectItem value="France">{t('france')}</SelectItem>
+                      <SelectItem value="Belgique">{t('belgium')}</SelectItem>
+                      <SelectItem value="Suisse">{t('switzerland')}</SelectItem>
+                      <SelectItem value="Autre">{t('other')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -331,10 +336,10 @@ export default function MemberForm({ onSuccess, member, isEditing = false }: Mem
 
         <div className="flex justify-end space-x-4 pt-4 border-t">
           <Button type="button" variant="outline" onClick={onSuccess} disabled={isLoading}>
-            Annuler
+            {t('cancel')}
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Enregistrement..." : isEditing ? "Mettre à jour" : "Créer le membre"}
+            {isLoading ? t('saving') : isEditing ? t('update') : t('createMember')}
           </Button>
         </div>
       </form>

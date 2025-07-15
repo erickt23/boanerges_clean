@@ -190,7 +190,7 @@ export default function Donations() {
         {/* Donation Stats */}
         <main className="flex-1 overflow-y-auto bg-background p-4 lg:p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <Card className="bg-yellow-50 dark:bg-card">
+            <Card className="bg-blue-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {t("totalThisMonth")}
@@ -208,7 +208,7 @@ export default function Donations() {
             </Card>
 
             {/* Tithes */}
-            <Card className="bg-blue-50 dark:bg-card">
+            <Card className="bg-green-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {t("tithes")}
@@ -232,7 +232,7 @@ export default function Donations() {
             </Card>
 
             {/* Offerings */}
-            <Card className="bg-green-50 dark:bg-card">
+            <Card className="bg-yellow-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {t("offerings")}
@@ -256,7 +256,7 @@ export default function Donations() {
             </Card>
             
             {/* General Donations */}
-            <Card className="bg-purple-50 dark:bg-card">
+            <Card className="bg-purple-50 dark:bg-card shadow-material hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
                   {t("generalDonations")}

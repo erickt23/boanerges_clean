@@ -48,6 +48,7 @@ export interface IStorage {
   
   // Attendance
   createAttendance(attendance: InsertAttendance): Promise<Attendance>;
+  createManyAttendances(attendances: InsertAttendance[]): Promise<Attendance[]>;
   getEventAttendance(eventId: number): Promise<Attendance[]>;
   getMemberAttendance(memberId: number, startDate?: Date, endDate?: Date): Promise<Attendance[]>;
   getAttendanceStats(startDate?: Date, endDate?: Date): Promise<any>;
@@ -326,6 +327,18 @@ export class DatabaseStorage implements IStorage {
     } catch (error: any) {
       if (error?.code === '23505') { // PostgreSQL unique constraint violation
         throw new Error('Cette personne est déjà marquée présente pour cet événement');
+      }
+      throw error;
+    }
+  }
+
+  async createManyAttendances(attendances: InsertAttendance[]): Promise<Attendance[]> {
+    try {
+      const created = await db.insert(attendance).values(attendances).returning();
+      return created;
+    } catch (error: any) {
+      if (error?.code === '23505') { // PostgreSQL unique constraint violation
+        throw new Error('Certains membres sont déjà marqués présents pour cet événement');
       }
       throw error;
     }
