@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { QrCode, UserCheck, UserPlus, Search } from "lucide-react";
 import QRScanner from "./qr-scanner";
+import { t } from "@/lib/i18n";
 
 interface AttendanceRegistrationProps {
   onSuccess?: () => void;
@@ -81,7 +82,7 @@ export default function AttendanceRegistration({ onSuccess }: AttendanceRegistra
   // Auto-select the best event when events are loaded
   useEffect(() => {
     if (events && !selectedEvent) {
-      const bestEvent = findBestEventForNow(events);
+      const bestEvent = findBestEventForNow(Array.isArray(events) ? events : []);
       if (bestEvent) {
         setSelectedEvent(bestEvent.id.toString());
       }
@@ -169,12 +170,10 @@ export default function AttendanceRegistration({ onSuccess }: AttendanceRegistra
       return;
     }
 
-    selectedMembers.forEach(memberId => {
-      attendanceMutation.mutate({
-        eventId: parseInt(selectedEvent),
-        memberId: memberId,
-        attendanceMethod: "manual",
-      });
+    attendanceMutation.mutate({
+      eventId: parseInt(selectedEvent),
+      memberIds: selectedMembers,
+      attendanceMethod: "manual",
     });
   };
 
