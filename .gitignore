@@ -12,4 +12,7 @@ vite.config.ts.*
 
 package-lock.json
 yarn.lock
-pnpm-lock.yaml
+pnpm-lock.yamlclean_data_dump.sql
+clean_full_dump.sql
+database_backup.sql
+schema_backup.sql
