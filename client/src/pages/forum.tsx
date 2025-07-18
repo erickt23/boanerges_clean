@@ -180,7 +180,7 @@ export default function Forum() {
       });
     },
     onError: (error) => {
-      //console.error("Topic creation error:", error);
+      
       toast({
         title: t("error"),
         description: t("failedToCreateTopic"),
@@ -229,7 +229,7 @@ export default function Forum() {
       });
     },
     onError: (error) => {
-      //console.error("Category edit error:", error);
+      
       toast({
         title: t("error"),
         description: t("failedToUpdateCategory"),

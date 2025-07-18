@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/lib/i18n";
 import { toast } from "@/hooks/use-toast";
-import { Eye, Upload, FolderPlus, Grid, List, Image, Video, Tag, Trash2, Filter, X } from "lucide-react";
+import { Eye, Upload, FolderPlus, Grid, List, Image, Video, Tag, Trash2, Filter, X, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -81,6 +81,8 @@ export default function Gallery() {
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
   const [showMediaDetails, setShowMediaDetails] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [editingAlbum, setEditingAlbum] = useState<PhotoAlbum | null>(null);
+  const [isEditAlbumOpen, setIsEditAlbumOpen] = useState(false);
 
   // Query: Albums
   const { data: albums = [], isLoading: albumsLoading } = useQuery<PhotoAlbum[]>({
@@ -120,9 +122,7 @@ export default function Gallery() {
     }
   });
 
-  console.log("Auth User:", user);
-  console.log("Photos Error:", photosError);
-  console.log("All Photos Error:", allPhotosError);
+  
 
   // Get unique tags from all photos
   const availableTags = React.useMemo(() => {
@@ -178,6 +178,49 @@ export default function Gallery() {
     }
   });
 
+  // Update Album Mutation
+  const updateAlbumMutation = useMutation({
+    mutationFn: (data: { id: number; title: string; description?: string; eventId?: number }) =>
+      apiRequest("PATCH", `/api/gallery/albums/${data.id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/gallery/albums"] });
+      setIsEditAlbumOpen(false);
+      setEditingAlbum(null);
+      toast({
+        title: t("success"),
+        description: "Album mis à jour avec succès",
+      });
+    },
+    onError: () => {
+      toast({
+        title: t("error"),
+        description: "Erreur lors de la mise à jour de l'album",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete Album Mutation
+  const deleteAlbumMutation = useMutation({
+    mutationFn: (albumId: number) =>
+      apiRequest("DELETE", `/api/gallery/albums/${albumId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/gallery/albums"] });
+      setSelectedAlbum(null); // Deselect album if deleted
+      toast({
+        title: t("success"),
+        description: "Album supprimé avec succès",
+      });
+    },
+    onError: () => {
+      toast({
+        title: t("error"),
+        description: "Erreur lors de la suppression de l'album",
+        variant: "destructive",
+      });
+    },
+  });
+
   // Upload Media Mutation
   const uploadMediaMutation = useMutation({
     mutationFn: (formData: FormData) => 
@@ -191,6 +234,7 @@ export default function Gallery() {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/gallery/photos"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/gallery/photos/all"] }); // Invalidate all photos query
       setUploadMediaOpen(false);
       toast({
         title: t("success"),
@@ -561,15 +605,53 @@ export default function Gallery() {
                         {t("allMedia")}
                       </Button>
                       {albums.map((album) => (
-                        <Button
-                          key={album.id}
-                          variant={selectedAlbum === album.id ? "default" : "ghost"}
-                          size="sm"
-                          className="w-full justify-start"
-                          onClick={() => setSelectedAlbum(album.id)}
-                        >
-                          {album.title}
-                        </Button>
+                        <div key={album.id} className="flex items-center justify-between group">
+                          <Button
+                            variant={selectedAlbum === album.id ? "default" : "ghost"}
+                            size="sm"
+                            className="w-full justify-start pr-10"
+                            onClick={() => setSelectedAlbum(album.id)}
+                          >
+                            {album.title}
+                          </Button>
+                          {canAccess("gallery", "manageAlbums") && (
+                            <div className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingAlbum(album);
+                                  setIsEditAlbumOpen(true);
+                                }}
+                              >
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700">
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>{t("confirmDeleteAlbum")}</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      {t("confirmDeleteAlbumDescription", { albumTitle: album.title })}
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteAlbumMutation.mutate(album.id)}>
+                                      {t("delete")}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </ScrollArea>
@@ -656,7 +738,7 @@ export default function Gallery() {
                     </Card>
                   )}
 
-                  <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "space-y-4"}>
+                  <div className={viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4" : "space-y-4"}>
                   {filteredPhotos?.map((photo: Photo) => (
                     <Card key={photo.id} className="group cursor-pointer" onClick={() => handlePhotoDetailOpen(photo)}>
                       <CardContent className="p-4">
@@ -708,36 +790,7 @@ export default function Gallery() {
                               <p className="text-muted-foreground mt-1">{formatFileSize(photo.fileSize)}</p>
                             )}
                           </div>
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="flex space-x-1">
-                              <Button size="sm" variant="secondary" onClick={() => setSelectedPhoto(photo)}>
-                                <Eye className="h-3 w-3" />
-                              </Button>
-                              {canAccess("gallery", "delete") && (
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <Button size="sm" variant="destructive">
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Supprimer le média</AlertDialogTitle>
-                                      <AlertDialogDescription>
-                                        Êtes-vous sûr de vouloir supprimer ce média ? Cette action ne peut pas être annulée.
-                                      </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Annuler</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDeletePhoto(photo.id)}>
-                                        Supprimer
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              )}
-                            </div>
-                          </div>
+                          
                         </div>
                         <div className="space-y-2">
                           <h3 className="font-medium truncate">{photo.name}</h3>
@@ -791,13 +844,13 @@ export default function Gallery() {
           if (!open) setSelectedPhoto(null);
         }}
       >
-        <DialogContent className="max-w-4xl">
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedPhoto?.name}</DialogTitle>
           </DialogHeader>
           {selectedPhoto && (
             <div className="flex flex-col items-center">
-              <div className="aspect-video w-full bg-muted rounded-lg flex items-center justify-center overflow-hidden mb-4">
+              <div className="aspect-square w-full bg-muted rounded-lg flex items-center justify-center overflow-hidden mb-4">
                 {selectedPhoto.mediaType === "video" ? (
                   <video 
                     src={`/uploads/gallery/${selectedPhoto.filename}`}
@@ -812,15 +865,48 @@ export default function Gallery() {
                   />
                 )}
               </div>
-              <Button 
-                variant="outline" 
-                className="mb-4" 
-                onClick={() => setShowMediaDetails(!showMediaDetails)}
-              >
-                {showMediaDetails ? t('hideDetails') : t('showDetails')}
-              </Button>
+              {/* Container for buttons: Delete (left) and Show Details (centered) */}
+              <div className="flex items-center w-full mb-4 relative"> {/* Add relative for absolute positioning */}
+                {/* Delete Button (left) - positioned absolutely */}
+                {canAccess("gallery", "delete") && (
+                  <div className="absolute left-0"> {/* Position absolutely to the left */}
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" size="icon">
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>{t("confirmDeleteMedia")}</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            {t("confirmDeleteMediaDescription")}
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDeletePhoto(selectedPhoto.id)}>
+                            {t("delete")}
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                )}
+
+                {/* Show details button - centered in the middle */}
+                <div className="flex-grow flex justify-center"> {/* This will now truly center it */}
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowMediaDetails(!showMediaDetails)}
+                  >
+                    {showMediaDetails ? t('hideDetails') : t('showDetails')}
+                  </Button>
+                </div>
+              </div>
               {showMediaDetails && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                  {/* First Column: Media Details */}
                   <div className="space-y-4">
                     <div>
                       <h3 className="font-medium mb-2">{t('mediaDetailsTitle')}</h3>
@@ -855,6 +941,9 @@ export default function Gallery() {
                         </div>
                       </div>
                     </div>
+                  </div>
+                  {/* Second Column: Caption and Tags */}
+                  <div className="space-y-4">
                     {selectedPhoto.caption && (
                       <div>
                         <h4 className="font-medium mb-2">Légende</h4>
@@ -879,6 +968,96 @@ export default function Gallery() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Album Dialog */}
+      <Dialog open={isEditAlbumOpen} onOpenChange={(open) => {
+        setIsEditAlbumOpen(open);
+        if (open && editingAlbum) {
+          albumForm.reset({
+            title: editingAlbum.title,
+            description: editingAlbum.description || "",
+            eventId: editingAlbum.eventId || undefined,
+          });
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("editAlbum")}</DialogTitle>
+          </DialogHeader>
+          <Form {...albumForm}>
+            <form onSubmit={albumForm.handleSubmit((data) => {
+              if (editingAlbum) {
+                updateAlbumMutation.mutate({ ...data, id: editingAlbum.id });
+              }
+            })} className="space-y-4">
+              <FormField
+                control={albumForm.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("albumTitle")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder={t("albumTitle")} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={albumForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} placeholder={t("albumDescription")} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={albumForm.control}
+                name="eventId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Événement associé (optionnel)</FormLabel>
+                    <FormControl>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(value ? parseInt(value) : undefined)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("selectEvent")} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {events.map((event) => (
+                            <SelectItem key={event.id} value={event.id.toString()}>
+                              {event.title} - {(() => {
+                                try {
+                                  return event.startDate ? format(new Date(event.startDate), "dd/MM/yyyy", { locale: fr }) : 'Date non disponible';
+                                } catch (error) {
+                                  return event.startDate || 'Date invalide';
+                                }
+                              })()}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end space-x-2">
+                <Button type="button" variant="outline" onClick={() => setIsEditAlbumOpen(false)}>
+                  Annuler
+                </Button>
+                <Button type="submit" disabled={updateAlbumMutation.isPending}>
+                  {updateAlbumMutation.isPending ? "Mise à jour..." : "Mettre à jour"}
+                </Button>
+              </div>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
