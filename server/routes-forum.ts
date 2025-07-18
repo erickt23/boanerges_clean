@@ -25,6 +25,7 @@ export function registerForumRoutes(app: Express) {
       const categories = await storage.getForumCategories();
       res.json(categories);
     } catch (error) {
+      
       console.error("Error fetching forum categories:", error);
       res.status(500).json({ error: "Failed to fetch categories" });
     }
@@ -44,6 +45,7 @@ export function registerForumRoutes(app: Express) {
       if (error.name === "ZodError") {
         return res.status(400).json({ error: fromZodError(error).toString() });
       }
+      
       console.error("Error creating forum category:", error);
       res.status(500).json({ error: "Failed to create category" });
     }
@@ -63,6 +65,7 @@ export function registerForumRoutes(app: Express) {
       
       res.json(category);
     } catch (error) {
+      
       console.error("Error updating forum category:", error);
       res.status(500).json({ error: "Failed to update category" });
     }
@@ -80,6 +83,7 @@ export function registerForumRoutes(app: Express) {
       
       res.json({ success: true });
     } catch (error) {
+      
       console.error("Error deleting forum category:", error);
       res.status(500).json({ error: "Failed to delete category" });
     }
@@ -94,6 +98,7 @@ export function registerForumRoutes(app: Express) {
       const topics = await storage.getForumTopics(categoryId, includeHidden);
       res.json(topics);
     } catch (error) {
+      
       console.error("Error fetching forum topics:", error);
       res.status(500).json({ error: "Failed to fetch topics" });
     }
@@ -106,6 +111,7 @@ export function registerForumRoutes(app: Express) {
       const topics = await storage.getRecentForumTopics(limit);
       res.json(topics);
     } catch (error) {
+      
       console.error("Error fetching recent topics:", error);
       res.status(500).json({ error: "Failed to fetch recent topics" });
     }
@@ -126,6 +132,7 @@ export function registerForumRoutes(app: Express) {
       
       res.json(topic);
     } catch (error) {
+      
       console.error("Error fetching forum topic:", error);
       res.status(500).json({ error: "Failed to fetch topic" });
     }
@@ -146,6 +153,7 @@ export function registerForumRoutes(app: Express) {
         return res.status(400).json({ error: fromZodError(error).toString() });
       }
       console.error("Error creating forum topic:", error);
+      console.error("Error creating forum topic:", error);
       res.status(500).json({ error: "Failed to create topic" });
     }
   });
@@ -164,6 +172,7 @@ export function registerForumRoutes(app: Express) {
       
       res.json({ success: true });
     } catch (error) {
+      console.error("Error updating topic visibility:", error);
       console.error("Error updating topic visibility:", error);
       res.status(500).json({ error: "Failed to update topic visibility" });
     }
@@ -184,6 +193,7 @@ export function registerForumRoutes(app: Express) {
       res.json({ success: true });
     } catch (error) {
       console.error("Error updating topic archive status:", error);
+      console.error("Error updating topic archive status:", error);
       res.status(500).json({ error: "Failed to update topic archive status" });
     }
   });
@@ -201,6 +211,7 @@ export function registerForumRoutes(app: Express) {
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting forum topic:", error);
+      console.error("Error deleting forum topic:", error);
       res.status(500).json({ error: "Failed to delete topic" });
     }
   });
@@ -214,6 +225,7 @@ export function registerForumRoutes(app: Express) {
       const replies = await storage.getForumReplies(topicId, includeHidden);
       res.json(replies);
     } catch (error) {
+      console.error("Error fetching forum replies:", error);
       console.error("Error fetching forum replies:", error);
       res.status(500).json({ error: "Failed to fetch replies" });
     }
@@ -236,6 +248,7 @@ export function registerForumRoutes(app: Express) {
       if (error.name === "ZodError") {
         return res.status(400).json({ error: fromZodError(error).toString() });
       }
+      console.error("Error creating forum reply:", error);
       console.error("Error creating forum reply:", error);
       res.status(500).json({ error: "Failed to create reply" });
     }

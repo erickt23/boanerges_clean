@@ -128,7 +128,7 @@ export function setupAuth(app: Express) {
 
       res.json({ message: "Password changed successfully" });
     } catch (error) {
-      console.error("Error changing password:", error);
+      
       res.status(500).json({ message: "Internal server error" });
     }
   });

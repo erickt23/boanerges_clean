@@ -368,6 +368,8 @@ export function registerRoutes(app: Express): Server {
         memberId: memberData.memberId,
         attendanceMethod: "qr_code",
         recordedBy: req.user!.id,
+        lastModifiedBy: req.user!.id, // Add this line
+        lastModifiedAt: new Date(), // Add this line
       });
       
       // Log the action
@@ -557,7 +559,9 @@ END:VCALENDAR`;
         const attendanceRecords = memberIds.map(memberId => ({
           ...rest,
           memberId,
-          recordedBy: req.user!.id
+          recordedBy: req.user!.id,
+          lastModifiedBy: req.user!.id, // Add this line
+          lastModifiedAt: new Date(), // Add this line
         }));
         const validatedRecords = z.array(insertAttendanceSchema).parse(attendanceRecords);
         const created = await storage.createManyAttendances(validatedRecords);
@@ -566,7 +570,9 @@ END:VCALENDAR`;
         // Handle single member or visitor
         const attendanceData = insertAttendanceSchema.parse({
           ...req.body,
-          recordedBy: req.user!.id
+          recordedBy: req.user!.id,
+          lastModifiedBy: req.user!.id, // Add this line
+          lastModifiedAt: new Date(), // Add this line
         });
         const attendance = await storage.createAttendance(attendanceData);
         res.status(201).json(attendance);
@@ -1010,6 +1016,67 @@ END:VCALENDAR`;
     }
   });
 
+  app.patch("/api/gallery/albums/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (req.user.role !== "admin" && req.user.role !== "super_admin") return res.sendStatus(403);
+
+    try {
+      const albumId = parseInt(req.params.id);
+      const updates = insertPhotoAlbumSchema.partial().parse(req.body);
+
+      const updatedAlbum = await storage.updatePhotoAlbum(albumId, updates);
+
+      if (!updatedAlbum) {
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      // Log the action
+      await storage.logAction({
+        userId: req.user!.id,
+        action: "UPDATE",
+        tableName: "photo_albums",
+        recordId: albumId,
+        newValues: JSON.stringify(updates)
+      });
+
+      res.json(updatedAlbum);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid album data", errors: error.errors });
+      } else {
+        res.status(500).json({ message: "Failed to update photo album" });
+      }
+    }
+  });
+
+  app.delete("/api/gallery/albums/:id", async (req, res) => {
+    //console.log("Attempting to delete album");
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (req.user.role !== "admin" && req.user.role !== "super_admin") return res.sendStatus(403);
+
+    try {
+      const albumId = parseInt(req.params.id);
+      const success = await storage.deletePhotoAlbum(albumId);
+
+      if (!success) {
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      // Log the action
+      await storage.logAction({
+        userId: req.user!.id,
+        action: "DELETE",
+        tableName: "photo_albums",
+        recordId: albumId,
+        newValues: JSON.stringify({ deleted: true })
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete photo album" });
+    }
+  });
+
   app.get("/api/gallery/albums/:id/photos", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     
@@ -1038,7 +1105,7 @@ END:VCALENDAR`;
         caption: req.body.caption || null,
         mediaType: req.file.mimetype.startsWith('video/') ? 'video' : 'photo',
         fileSize: req.file.size,
-        tags: req.body.tags ? JSON.parse(req.body.tags) : [],
+        tags: (req.body.tags && req.body.tags !== '') ? JSON.parse(req.body.tags) : [],
         uploadedBy: req.user!.id
       });
       

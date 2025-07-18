@@ -64,6 +64,8 @@ export const attendance = pgTable("attendance", {
   attendanceMethod: text("attendance_method", { enum: ["manual", "qr_code", "visitor"] }).notNull(),
   recordedBy: integer("recorded_by").references(() => users.id).notNull(),
   recordedAt: timestamp("recorded_at").defaultNow().notNull(),
+  lastModifiedAt: timestamp("last_modified_at"),
+  lastModifiedBy: integer("last_modified_by").references(() => users.id),
 });
 
 // Donations table
@@ -306,7 +308,10 @@ export const insertEventSchema = createInsertSchema(events).omit({
   createdAt: true,
 });
 
-export const insertAttendanceSchema = createInsertSchema(attendance).omit({
+export const insertAttendanceSchema = createInsertSchema(attendance, {
+  lastModifiedAt: z.date().optional(),
+  lastModifiedBy: z.number().optional(),
+}).omit({
   id: true,
   recordedAt: true,
 });

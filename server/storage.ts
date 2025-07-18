@@ -12,7 +12,7 @@ import {
   type ForumReply, type InsertForumReply
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, gte, lte, sql, like, count, sum, or } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql, like, count, sum, or, arrayOverlaps } from "drizzle-orm";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { pool } from "./db";
@@ -77,6 +77,8 @@ export interface IStorage {
   
   // Photo Albums & Gallery
   createPhotoAlbum(album: InsertPhotoAlbum): Promise<PhotoAlbum>;
+  updatePhotoAlbum(id: number, updates: Partial<InsertPhotoAlbum>): Promise<PhotoAlbum | undefined>;
+  deletePhotoAlbum(id: number): Promise<boolean>;
   getPhotoAlbums(eventId?: number): Promise<PhotoAlbum[]>;
   addPhoto(photo: InsertPhoto): Promise<Photo>;
   getAlbumPhotos(albumId: number): Promise<Photo[]>;
@@ -420,7 +422,8 @@ export class DatabaseStorage implements IStorage {
       .select({
         date: sql<string>`DATE(${events.startDate})`,
         present: count(attendance.id),
-        eventTitle: events.title
+        eventTitle: events.title,
+        eventId: events.id
       })
       .from(attendance)
       .innerJoin(events, eq(attendance.eventId, events.id))
@@ -634,6 +637,24 @@ export class DatabaseStorage implements IStorage {
     return album;
   }
 
+  async updatePhotoAlbum(id: number, updates: Partial<InsertPhotoAlbum>): Promise<PhotoAlbum | undefined> {
+    const [album] = await db.update(photoAlbums).set(updates).where(eq(photoAlbums.id, id)).returning();
+    return album || undefined;
+  }
+
+  async deletePhotoAlbum(id: number): Promise<boolean> {
+    try {
+      // Delete all photos associated with the album first
+      await db.delete(photos).where(eq(photos.albumId, id));
+      // Then delete the album
+      const result = await db.delete(photoAlbums).where(eq(photoAlbums.id, id));
+      return result.rowCount !== null && result.rowCount > 0;
+    } catch (error) {
+      console.error("Error deleting photo album:", error);
+      return false;
+    }
+  }
+
   async getPhotoAlbums(eventId?: number): Promise<PhotoAlbum[]> {
     let query = db.select().from(photoAlbums);
     
@@ -645,8 +666,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async addPhoto(insertPhoto: InsertPhoto): Promise<Photo> {
-    const [photo] = await db.insert(photos).values(insertPhoto).returning();
-    return photo;
+    try {
+      const [photo] = await db.insert(photos).values({
+        albumId: insertPhoto.albumId,
+        filename: insertPhoto.filename,
+        originalName: insertPhoto.originalName,
+        caption: insertPhoto.caption,
+        mediaType: insertPhoto.mediaType,
+        fileSize: insertPhoto.fileSize,
+        duration: insertPhoto.duration,
+        tags: insertPhoto.tags,
+        uploadedBy: insertPhoto.uploadedBy,
+      }).returning();
+      return photo;
+    } catch (error) {
+      console.error("Error in addPhoto:", error);
+      throw error;
+    }
   }
 
   async getAlbumPhotos(albumId: number): Promise<Photo[]> {
@@ -659,7 +695,19 @@ export class DatabaseStorage implements IStorage {
 
   async getAllPhotos(filters?: { mediaType?: string; tags?: string[]; albumId?: number }): Promise<Photo[]> {
     try {
-      let query = db.select().from(photos);
+      let query = db.select({
+        id: photos.id,
+        albumId: photos.albumId,
+        filename: photos.filename,
+        originalName: photos.originalName,
+        caption: photos.caption,
+        mediaType: photos.mediaType,
+        fileSize: photos.fileSize,
+        duration: photos.duration,
+        tags: photos.tags,
+        uploadedBy: photos.uploadedBy,
+        uploadedAt: photos.uploadedAt,
+      }).from(photos);
       
       const conditions = [];
       
@@ -672,8 +720,8 @@ export class DatabaseStorage implements IStorage {
       }
       
       if (filters?.tags && filters.tags.length > 0) {
-        // Filter by tags - PostgreSQL array contains operation
-        conditions.push(sql`${photos.tags} && ${sql.array(filters.tags)}`);
+        // Filter by tags using PostgreSQL array overlap operator
+        conditions.push(sql`${photos.tags} ?| ${sql.array(filters.tags)}`);
       }
       
       if (conditions.length > 0) {
@@ -684,7 +732,7 @@ export class DatabaseStorage implements IStorage {
       
       return await query.orderBy(desc(photos.uploadedAt));
     } catch (error) {
-      console.error("Error in getAllPhotos:", error);
+      console.error("Error in getAllPhotos with filters:", filters, error);
       throw error; // Re-throw to be caught by the route handler
     }
   }
